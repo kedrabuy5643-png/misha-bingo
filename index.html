@@ -12,7 +12,7 @@
         .info-item { display: flex; flex-direction: column; font-size: 0.75rem; }
         .info-label { color: #888; margin-bottom: 2px; }
         .info-value { color: #ffeb3b; font-weight: bold; font-size: 0.9rem; }
-        .stake-box { background: var(--accent); padding: 5px 12px; border-radius: 15px; color: white; font-weight: bold; font-size: 0.8rem; display: flex; align-items: center; cursor: pointer; }
+        .stake-box { background: var(--accent); padding: 5px 12px; border-radius: 15px; color: white; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
         .game-stats { display: flex; justify-content: space-between; background: #1a1a2e; padding: 8px; border-radius: 8px; margin-bottom: 10px; border-bottom: 2px solid #333; font-size: 0.75rem; }
         .stat-box { display: flex; flex-direction: column; gap: 2px; }
         .stat-label { color: #aaa; font-size: 0.65rem; text-transform: uppercase; }
@@ -40,11 +40,9 @@
         #bingo-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; }
         .win-box { background: #1a1a2e; padding: 25px; border-radius: 20px; width: 85%; text-align: center; border: 1px solid #333; }
         .win-prize { color: #ffeb3b; font-size: 1.5rem; font-weight: bold; margin-top: 10px; }
-        .win-tag { background: #2c3e50; padding: 8px 15px; border-radius: 25px; margin: 4px; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 8px; color: #fff; }
     </style>
 </head>
 <body>
-
     <div id="bingo-overlay" class="hidden">
         <div class="win-box">
             <div style="font-size: 3rem;">🏆</div>
@@ -57,17 +55,13 @@
 
     <div id="p1">
         <div class="info-bar">
-            <div class="info-item"><span class="info-label">Main Wallet</span><span class="info-value" id="main-wallet-display">0.00</span></div>
-            <div class="info-item"><span class="info-label">Play Wallet</span><span class="info-value" id="play-wallet-display">0.00</span></div>
+            <div class="info-item"><span class="info-label">Main Wallet</span><span class="info-value" id="main-wallet">0.00</span></div>
+            <div class="info-item"><span class="info-label">Play Wallet</span><span class="info-value" id="play-wallet">0.00</span></div>
             <div class="stake-box" onclick="handleStake()">Stake 10</div>
             <div id="timer" style="background:#ffeb3b; color:#000; font-weight:bold; padding:5px 10px; border-radius:8px;">20 s</div>
         </div>
         <h3 style="color:#4caf50; margin: 10px 0;">ካርቴላ ይምረጡ</h3>
         <div class="scroll-area"><div class="num-grid" id="btns-container"></div></div>
-        <div id="preview-area" class="hidden">
-            <p>የተመረጠው: #<span id="sel-id"></span></p>
-            <div id="preview-card-html"></div>
-        </div>
     </div>
 
     <div id="p2" class="hidden">
@@ -89,33 +83,26 @@
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const botBalance = urlParams.get('balance') || "0.00";
         const userId = urlParams.get('user_id');
-        // አንተ የሰጠኸኝ መረጃ እዚህ ገብቷል
-        const apiKey = "AjrN4gl9HapjUyFMi5o7PE238LJzwzrNeryBOBdd"; 
-        const botId = "1383794"; // ያንተ Bot ID
+        const initialBalance = parseFloat(urlParams.get('balance') || "0");
+        const apiKey = "AjrN4gl9HapjUyFMi5o7PE238LJzwzrNeryBOBdd";
+        const botId = "1383794";
 
-        document.getElementById("main-wallet-display").innerText = parseFloat(botBalance).toFixed(2);
+        document.getElementById('main-wallet').innerText = initialBalance.toFixed(2);
 
-        function updateBotBalance(amountChange) {
+        function updateBalance(amount) {
             if(!userId) return;
-            const apiUrl = `https://api.bot-business.com/v1/bots/${botId}/users/${userId}/resources/balance/add?amount=${amountChange}&api_key=${apiKey}`;
-            fetch(apiUrl, { method: 'POST' })
-            .then(() => {
-                let current = parseFloat(document.getElementById("main-wallet-display").innerText);
-                document.getElementById("main-wallet-display").innerText = (current + amountChange).toFixed(2);
-            });
+            fetch(`https://api.bot-business.com/v1/bots/${botId}/users/${userId}/resources/balance/add?amount=${amount}&api_key=${apiKey}`, {method:'POST'});
+            let cur = parseFloat(document.getElementById('main-wallet').innerText);
+            document.getElementById('main-wallet').innerText = (cur + amount).toFixed(2);
         }
 
         function handleStake() {
-            let current = parseFloat(document.getElementById("main-wallet-display").innerText);
-            if(current >= 10) {
-                updateBotBalance(-10);
-                document.getElementById("play-wallet-display").innerText = "10.00";
-                alert("10 ብር ተቀንሷል! መልካም እድል!");
-            } else {
-                alert("በቂ ባላንስ የለዎትም!");
-            }
+            let cur = parseFloat(document.getElementById('main-wallet').innerText);
+            if(cur >= 10) {
+                updateBalance(-10);
+                document.getElementById('play-wallet').innerText = "10.00";
+            } else { alert("በቂ ባላንስ የለዎትም!"); }
         }
 
         let chosenId = null;
@@ -157,17 +144,14 @@
             b.onclick = () => {
                 document.querySelectorAll('.n-btn').forEach(x=>x.classList.remove('active'));
                 b.classList.add('active'); chosenId = i;
-                document.getElementById('sel-id').innerText = i;
-                document.getElementById('preview-area').classList.remove('hidden');
-                document.getElementById('preview-card-html').innerHTML = createCardHTML(i, false);
             };
             btnBox.appendChild(b);
         }
 
         let sec = 20;
-        let timerInt = setInterval(() => {
+        let t = setInterval(() => {
             sec--; document.getElementById('timer').innerText = sec + " s";
-            if(sec <= 0) { clearInterval(timerInt); if(chosenId) startGame(); else location.reload(); }
+            if(sec <= 0) { clearInterval(t); if(chosenId) startGame(); else location.reload(); }
         }, 1000);
 
         function startGame() {
@@ -178,7 +162,6 @@
                 let d = document.createElement('div'); d.className='b-cell'; d.id='bc-'+i; d.innerText=i; sg.appendChild(d);
             }
             document.getElementById('main-card-area').innerHTML = createCardHTML(chosenId, true);
-
             let loop = setInterval(() => {
                 let n; do { n = Math.floor(Math.random()*75)+1; } while(calledNums.includes(n));
                 calledNums.push(n);
@@ -186,7 +169,6 @@
                 document.getElementById('ball-display').innerText = letters[Math.floor((n-1)/15)] + "-" + n;
                 if(document.getElementById('bc-'+n)) document.getElementById('bc-'+n).classList.add('hit');
                 if(document.getElementById('c-'+n)) document.getElementById('c-'+n).classList.add('marked');
-                
                 let win = checkWin();
                 if(win) { clearInterval(loop); showBingo(win); }
             }, 2500); 
@@ -205,18 +187,15 @@
         }
 
         function showBingo(win) {
-            updateBotBalance(8); // ሲያሸንፍ 8 ብር ይጨምራል
+            updateBalance(8);
             const grid = document.getElementById('game-grid');
             const line = document.createElement('div'); line.className='win-line';
             if(win.type==='h') { line.style.width='100%'; line.style.height='4px'; line.style.top=(win.idx*20+10)+'%'; }
             if(win.type==='v') { line.style.width='4px'; line.style.height='100%'; line.style.left=(win.idx*20+10)+'%'; }
             grid.appendChild(line);
-
             setTimeout(() => {
-                document.getElementById('winners-list').innerHTML = `<div class="win-tag">👤 አንተ #${chosenId}</div>`;
                 document.getElementById('win-cartela-text').innerText = `Winning Cartela: #${chosenId}`;
                 document.getElementById('bingo-overlay').classList.remove('hidden');
-                setTimeout(() => location.reload(), 8000);
             }, 500);
         }
     </script>
