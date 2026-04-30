@@ -21,7 +21,7 @@
         .num-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
         .n-btn { padding: 12px 0; border: none; background: #2c3e50; color: white; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .n-btn.active { background: var(--accent); border: 2px solid #fff; }
-        .start-btn { background: #4caf50; padding: 8px 15px; border-radius: 15px; color: white; font-weight: bold; font-size: 0.8rem; cursor: pointer; border: none; margin-top: 10px; }
+        .start-btn { background: #4caf50; padding: 10px 20px; border-radius: 20px; color: white; font-weight: bold; font-size: 1rem; cursor: pointer; border: none; margin-top: 15px; width: 80%; }
         .start-btn.locked { background: #555; cursor: not-allowed; }
         .game-layout { display: flex; gap: 8px; justify-content: center; align-items: start; }
         .board-left { background: #16213e; padding: 5px; border-radius: 8px; width: 150px; }
@@ -30,35 +30,35 @@
         .sb-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; }
         .b-cell { font-size: 0.75rem; padding: 4px 0; color: #444; border: 1px solid #222; text-align: center; }
         .b-cell.hit { background: #ffeb3b; color: #000; font-weight: bold; }
-        .card-container { background: #fff; padding: 4px; border-radius: 6px; width: 175px; position: relative; margin: 0 auto; }
+        .card-container { background: #fff; padding: 4px; border-radius: 6px; width: 185px; position: relative; margin: 0 auto; }
         .card-header { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; margin-bottom: 2px; }
-        .card-header div { color: white; font-weight: bold; padding: 2px 0; border-radius: 2px; font-size: 0.7rem; }
+        .card-header div { color: white; font-weight: bold; padding: 4px 0; border-radius: 2px; font-size: 0.8rem; }
         .grid-mini { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; position: relative; }
-        .cell { aspect-ratio: 1; background: #f0f0f0; color: black; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px; font-size: 0.75rem; border: 1px solid #eee; }
+        .cell { aspect-ratio: 1; background: #f0f0f0; color: black; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 2px; font-size: 0.85rem; border: 1px solid #eee; }
         .cell.marked { background: #ffc107; border: 1px solid #e65100; }
-        .cell.free { background: #4caf50; color: white; font-size: 0.4rem; }
-        .win-line { position: absolute; background: rgba(233, 69, 96, 0.8); z-index: 100; border-radius: 5px; pointer-events: none; }
-        .call-ball { background: white; color: #8e24aa; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: bold; margin: 0 auto 10px; border: 4px solid #ffeb3b; }
+        .cell.free { background: #4caf50; color: white; font-size: 0.5rem; }
+        .win-line { position: absolute; background: rgba(233, 69, 96, 0.9); z-index: 100; border-radius: 5px; pointer-events: none; }
+        .call-ball { background: white; color: #8e24aa; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; margin: 10px auto; border: 4px solid #ffeb3b; }
         #bingo-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; }
-        .win-box { background: #1a1a2e; padding: 25px; border-radius: 20px; width: 85%; text-align: center; border: 1px solid #333; }
+        .win-box { background: #1a1a2e; padding: 30px; border-radius: 20px; width: 85%; text-align: center; border: 1px solid #333; }
     </style>
 </head>
 <body>
 
     <div id="bingo-overlay" class="hidden">
         <div class="win-box">
-            <div style="font-size: 3rem;">🏆</div>
+            <div style="font-size: 4rem;">🏆</div>
             <h1 style="color: #ffeb3b; margin: 10px 0; font-size: 2.5rem;">BINGO!</h1>
-            <p id="win-cartela-text" style="color: #4caf50; font-weight: bold; margin-top: 15px; font-size: 1.1rem;"></p>
-            <div style="color: #ffeb3b; font-size: 1.5rem; font-weight: bold; margin-top: 10px;">ያሸነፉት: 8.00 ETB</div>
+            <p id="win-cartela-text" style="color: #4caf50; font-weight: bold; margin-top: 15px; font-size: 1.2rem;"></p>
+            <div style="color: #ffeb3b; font-size: 1.8rem; font-weight: bold; margin-top: 10px;">አሸንፈሃል: 8.00 ETB</div>
         </div>
     </div>
 
     <div id="p1">
         <div class="info-bar">
-            <div class="info-item"><span class="info-label">Main Wallet (Win)</span><span class="info-value" id="main-wallet">0.00</span></div>
-            <div class="info-item"><span class="info-label">Play Wallet (Dep)</span><span class="info-value" id="play-wallet">0.00</span></div>
-            <div id="ready-indicator" class="ready-status hidden">READY ✅</div>
+            <div class="info-item"><span class="info-label">Main (Win)</span><span class="info-value" id="main-wallet">0.00</span></div>
+            <div class="info-item"><span class="info-label">Play (Dep)</span><span class="info-value" id="play-wallet">0.00</span></div>
+            <div id="ready-indicator" class="ready-status hidden">ተዘጋጅተዋል ✅</div>
             <div id="timer" style="background:#ffeb3b; color:#000; font-weight:bold; padding:5px 10px; border-radius:8px;">20 s</div>
         </div>
         <h3 style="color:#4caf50; margin: 10px 0;">ካርቴላ ይምረጡ</h3>
@@ -72,10 +72,10 @@
 
     <div id="p2" class="hidden">
         <div class="game-stats">
-            <div class="stat-box"><span class="stat-label">Players</span><span class="stat-val">1</span></div>
-            <div class="stat-box"><span class="stat-label">Bet</span><span class="stat-val">10.00</span></div>
-            <div class="stat-box"><span class="stat-label">Derash</span><span class="stat-val">8.00</span></div>
-            <div class="stat-box"><span class="stat-label">Called</span><span class="stat-val" id="called-count">0</span></div>
+            <div class="stat-box"><span class="stat-label">ተጫዋች</span><span class="stat-val">1</span></div>
+            <div class="stat-box"><span class="stat-label">መወራረድ</span><span class="stat-val">10.00</span></div>
+            <div class="stat-box"><span class="stat-label">ደራሽ</span><span class="stat-val">8.00</span></div>
+            <div class="stat-box"><span class="stat-label">የወጡ</span><span class="stat-val" id="called-count">0</span></div>
         </div>
         <div class="call-ball" id="ball-display">--</div>
         <div class="game-layout">
@@ -90,7 +90,6 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const userId = urlParams.get('user_id');
-        // ቦቱ ላይ ያለው ተቀማጭ ብር ወደ Play Wallet ይገባል
         const initialPlayBalance = parseFloat(urlParams.get('balance') || "0");
         const apiKey = "AjrN4gl9HapjUyFMi5o7PE238LJzwzrNeryBOBdd";
         const botId = "1383794";
@@ -107,6 +106,7 @@
         let calledNums = [];
         let myCardData = [];
         const letters = ['B', 'I', 'N', 'G', 'O'];
+        const colors = ['#1e88e5', '#8e24aa', '#d81b60', '#43a047', '#fb8c00'];
 
         function getCardData(id) {
             let card = [];
@@ -123,7 +123,7 @@
             const data = getCardData(id);
             if(isGame) myCardData = data;
             let h = `<div class="card-container"><div class="card-header">`;
-            letters.forEach((l, i) => h += `<div style="background:#8e24aa">${l}</div>`);
+            letters.forEach((l, i) => h += `<div style="background:${colors[i]}">${l}</div>`);
             h += `</div><div class="grid-mini" id="${isGame?'game-grid':''}">`;
             for(let r=0; r<5; r++) {
                 for(let c=0; c<5; c++) {
@@ -140,18 +140,15 @@
             let b = document.createElement('button'); b.className='n-btn'; b.innerText=i;
             b.onclick = () => {
                 let pBal = parseFloat(document.getElementById('play-wallet').innerText);
-                if(pBal < 10 && !isStaked) { alert("በቂ ባላንስ በ Play Wallet ላይ የለዎትም!"); return; }
-                
+                if(pBal < 10 && !isStaked) { alert("በቂ ባላንስ የለዎትም!"); return; }
                 document.querySelectorAll('.n-btn').forEach(x=>x.classList.remove('active'));
                 b.classList.add('active'); 
                 chosenId = i;
-                
                 if(!isStaked) {
-                    updateBotBalance(-10); // ቦቱ ላይ ይቀንሳል
+                    updateBotBalance(-10);
                     isStaked = true;
                     document.getElementById('play-wallet').innerText = (pBal - 10).toFixed(2);
                 }
-                
                 document.getElementById('sel-id').innerText = i;
                 document.getElementById('preview-area').classList.remove('hidden');
                 document.getElementById('preview-card-html').innerHTML = createCardHTML(i, false);
@@ -161,7 +158,7 @@
 
         function setReady() {
             document.getElementById('ready-indicator').classList.remove('hidden');
-            document.getElementById('start-btn').innerText = "እባክዎ ታይምሩ እስኪያልቅ ይጠብቁ...";
+            document.getElementById('start-btn').innerText = "እባክዎ ይጠብቁ...";
             document.getElementById('start-btn').classList.add('locked');
             document.getElementById('start-btn').disabled = true;
         }
@@ -170,11 +167,7 @@
         let t = setInterval(() => {
             sec--; 
             document.getElementById('timer').innerText = sec + " s";
-            if(sec <= 0) { 
-                clearInterval(t); 
-                if(chosenId) startGame(); 
-                else location.reload(); 
-            }
+            if(sec <= 0) { clearInterval(t); if(chosenId) startGame(); else location.reload(); }
         }, 1000);
 
         function startGame() {
@@ -210,13 +203,14 @@
         }
 
         function showBingo(win) {
-            updateBotBalance(8); // ቦቱ ላይ ይጨምራል
+            updateBotBalance(8);
             let mBal = parseFloat(document.getElementById('main-wallet').innerText);
             document.getElementById('main-wallet').innerText = (mBal + 8).toFixed(2);
-            
             document.getElementById('win-cartela-text').innerText = `አሸናፊ ካርቴላ: #${chosenId}`;
             document.getElementById('bingo-overlay').classList.remove('hidden');
-            setTimeout(() => location.reload(), 7000);
+            
+            // ተስተካክሏል፡ ከ 3 ሰከንድ በኋላ ገጹ Refresh ይሆናል
+            setTimeout(() => location.reload(), 3000);
         }
     </script>
 </body>
