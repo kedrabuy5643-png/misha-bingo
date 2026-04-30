@@ -90,11 +90,17 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const userId = urlParams.get('user_id');
-        const initialPlayBalance = parseFloat(urlParams.get('balance') || "0");
+        let currentPlayBalance = parseFloat(urlParams.get('balance') || "0");
+        let currentWinBalance = 0;
         const apiKey = "AjrN4gl9HapjUyFMi5o7PE238LJzwzrNeryBOBdd";
         const botId = "1383794";
 
-        document.getElementById('play-wallet').innerText = initialPlayBalance.toFixed(2);
+        function updateWallets() {
+            document.getElementById('play-wallet').innerText = currentPlayBalance.toFixed(2);
+            document.getElementById('main-wallet').innerText = currentWinBalance.toFixed(2);
+        }
+
+        updateWallets();
 
         function updateBotBalance(amount) {
             if(!userId) return;
@@ -107,6 +113,32 @@
         let myCardData = [];
         const letters = ['B', 'I', 'N', 'G', 'O'];
         const colors = ['#1e88e5', '#8e24aa', '#d81b60', '#43a047', '#fb8c00'];
+
+        function initNumGrid() {
+            const btnBox = document.getElementById('btns-container');
+            btnBox.innerHTML = '';
+            for(let i=1; i<=100; i++) {
+                let b = document.createElement('button'); b.className='n-btn'; b.innerText=i;
+                b.onclick = () => {
+                    if(currentPlayBalance < 10 && !isStaked) { alert("በቂ ባላንስ የለዎትም!"); return; }
+                    document.querySelectorAll('.n-btn').forEach(x=>x.classList.remove('active'));
+                    b.classList.add('active'); 
+                    chosenId = i;
+                    if(!isStaked) {
+                        updateBotBalance(-10);
+                        isStaked = true;
+                        currentPlayBalance -= 10;
+                        updateWallets();
+                    }
+                    document.getElementById('sel-id').innerText = i;
+                    document.getElementById('preview-area').classList.remove('hidden');
+                    document.getElementById('preview-card-html').innerHTML = createCardHTML(i, false);
+                };
+                btnBox.appendChild(b);
+            }
+        }
+
+        initNumGrid();
 
         function getCardData(id) {
             let card = [];
@@ -135,27 +167,6 @@
             return h + `</div></div>`;
         }
 
-        const btnBox = document.getElementById('btns-container');
-        for(let i=1; i<=100; i++) {
-            let b = document.createElement('button'); b.className='n-btn'; b.innerText=i;
-            b.onclick = () => {
-                let pBal = parseFloat(document.getElementById('play-wallet').innerText);
-                if(pBal < 10 && !isStaked) { alert("በቂ ባላንስ የለዎትም!"); return; }
-                document.querySelectorAll('.n-btn').forEach(x=>x.classList.remove('active'));
-                b.classList.add('active'); 
-                chosenId = i;
-                if(!isStaked) {
-                    updateBotBalance(-10);
-                    isStaked = true;
-                    document.getElementById('play-wallet').innerText = (pBal - 10).toFixed(2);
-                }
-                document.getElementById('sel-id').innerText = i;
-                document.getElementById('preview-area').classList.remove('hidden');
-                document.getElementById('preview-card-html').innerHTML = createCardHTML(i, false);
-            };
-            btnBox.appendChild(b);
-        }
-
         function setReady() {
             document.getElementById('ready-indicator').classList.remove('hidden');
             document.getElementById('start-btn').innerText = "እባክዎ ይጠብቁ...";
@@ -164,16 +175,21 @@
         }
 
         let sec = 20;
-        let t = setInterval(() => {
+        let timerInterval = setInterval(() => {
             sec--; 
             document.getElementById('timer').innerText = sec + " s";
-            if(sec <= 0) { clearInterval(t); if(chosenId) startGame(); else location.reload(); }
+            if(sec <= 0) { 
+                if(chosenId) startGame(); 
+                else resetUIAfterGame(); 
+            }
         }, 1000);
 
         function startGame() {
+            clearInterval(timerInterval);
             document.getElementById('p1').classList.add('hidden');
             document.getElementById('p2').classList.remove('hidden');
             const sg = document.getElementById('side-grid');
+            sg.innerHTML = '';
             for(let i=1; i<=75; i++) {
                 let d = document.createElement('div'); d.className='b-cell'; d.id='bc-'+i; d.innerText=i; sg.appendChild(d);
             }
@@ -204,13 +220,42 @@
 
         function showBingo(win) {
             updateBotBalance(8);
-            let mBal = parseFloat(document.getElementById('main-wallet').innerText);
-            document.getElementById('main-wallet').innerText = (mBal + 8).toFixed(2);
+            currentWinBalance += 8;
+            updateWallets();
             document.getElementById('win-cartela-text').innerText = `አሸናፊ ካርቴላ: #${chosenId}`;
             document.getElementById('bingo-overlay').classList.remove('hidden');
-            
-            // ተስተካክሏል፡ ከ 3 ሰከንድ በኋላ ገጹ Refresh ይሆናል
-            setTimeout(() => location.reload(), 3000);
+            setTimeout(() => {
+                document.getElementById('bingo-overlay').classList.add('hidden');
+                resetUIAfterGame();
+            }, 3000);
+        }
+
+        function resetUIAfterGame() {
+            // ጨዋታውን Refresh ሳያደርግ ወደ መጀመሪያው ሁኔታ ይመልሰዋል
+            chosenId = null;
+            isStaked = false;
+            calledNums = [];
+            sec = 20;
+            document.getElementById('timer').innerText = "20 s";
+            document.getElementById('p2').classList.add('hidden');
+            document.getElementById('p1').classList.remove('hidden');
+            document.getElementById('preview-area').classList.add('hidden');
+            document.getElementById('ready-indicator').classList.add('hidden');
+            document.getElementById('start-btn').innerText = "Start Bingo";
+            document.getElementById('start-btn').classList.remove('locked');
+            document.getElementById('start-btn').disabled = false;
+            document.getElementById('called-count').innerText = "0";
+            document.getElementById('ball-display').innerText = "--";
+            initNumGrid();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                sec--; 
+                document.getElementById('timer').innerText = sec + " s";
+                if(sec <= 0) { 
+                    if(chosenId) startGame(); 
+                    else resetUIAfterGame(); 
+                }
+            }, 1000);
         }
     </script>
 </body>
